@@ -8,7 +8,7 @@
     function createUser() {
       const payload = {
         name: $('[name=name]').val(),
-        email: $('[name=email]').val(),
+        username: $('[name=username]').val(),
         password: $('[name=password]').val(),
         role: $('[name=role]').val(),
         groups: $('[name=groups]').val(),
@@ -58,7 +58,7 @@
       $('[name=role]').val(role);
       $('[name=groups]').val(groupsArray);
       $('[name=groups]').select2().trigger('change');
-      $('[name=email]').prop('disabled', true);
+      $('[name=username]').prop('disabled', true);
     }
 
     function validateFields() {
@@ -67,8 +67,8 @@
         return false;
       }
 
-      const email = $('[name=email]').val();
-      if (email.length === 0) {
+      const username = $('[name=username]').val();
+      if (username.length === 0) {
         return false;
       }
 
@@ -138,8 +138,8 @@
           <input class="form-control" type="text" name="name" value="{{user.name}}">
         </div>
         <div class="col-xs-12 col-md-6 mb-3">
-          <label>Email</label>
-          <input class="form-control" type="text" name="email" value="{{user.email}}">
+          <label>Username</label>
+          <input class="form-control" type="text" name="username" value="{{user.username}}">
         </div>
       </div>
       <div class="row">

@@ -5,16 +5,16 @@
     $('#loginForm').submit(function (e) {
       e.preventDefault();
 
-      const email = $('[name=email]').val();
+      const username = $('[name=username]').val();
       const password = $('[name=password]').val();
 
-      if (!email || !password) {
+      if (!username || !password) {
         $('#fillAllFieldsToast').toast('show');
         return false;
       }
 
       const payload = {
-        email,
+        username,
         password,
       };
 
@@ -58,7 +58,7 @@
                 </div>
                 <form class="user" id="loginForm">
                   <div class="form-group">
-                    <input type="email" name="email" class="form-control form-control-user" placeholder="Email">
+                    <input type="text" name="username" class="form-control form-control-user" placeholder="Username">
                   </div>
                   <div class="form-group">
                     <input type="password" name="password" class="form-control form-control-user" placeholder="Password">

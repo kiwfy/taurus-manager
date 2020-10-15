@@ -51,7 +51,7 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Email</th>
+            <th>Username</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
@@ -60,7 +60,7 @@
           {{#each users}}
           <tr class="vertical-center">
             <td>{{ this.name }}</td>
-            <td>{{ this.email }}</td>
+            <td>{{ this.username }}</td>
             <td>{{ this.role }}</td>
             <td>
               <button class="btn btn-primary btn-sm shadow edit-user-button" data-userid="{{ this.id }}">Edit</button>

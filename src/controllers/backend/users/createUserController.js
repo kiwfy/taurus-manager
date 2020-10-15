@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const store = require('../../../utils/store');
 
 const handler = async (req, res) => {
-  const { name, email, password, role, groups } = req.body;
+  const { name, username, password, role, groups } = req.body;
   const id = Ulid.ulid();
   const usersStore = store('src/storage/users');
   const payload = {
     name,
-    email,
+    username,
     password: bcrypt.hashSync(password, 8),
     role,
     groups,
