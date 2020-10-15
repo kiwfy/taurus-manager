@@ -118,33 +118,43 @@
             {{/if}}
           </div>
         </div>
-        <hr>
+        <hr class="mt-3 mb-0">
         <div class="mt-1">
 
-          <div class="d-flex align-items-center justify-content-between my-1">
-            <span class="h5 my-0">Waiting</span>
-            <span class="h5 my-0 font-weight-bold">{{this.jobCounts.waiting}}</span>
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Failed</span>
+            <span class="font-weight-bold">{{this.jobCounts.failed}}</span>
           </div>
 
-          <div class="d-flex align-items-center justify-content-between my-1">
-            <span class="h5 my-0">Failed</span>
-            <span class="h5 my-0 font-weight-bold">{{this.jobCounts.failed}}</span>
+          <hr class="my-1" />
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Waiting</span>
+            <span class="font-weight-bold">{{this.jobCounts.waiting}}</span>
           </div>
+
+          <hr class="my-1" />
 
           <div class="d-flex align-items-center justify-content-between">
             <span>Active</span>
             <span class="font-weight-bold">{{this.jobCounts.active}}</span>
           </div>
 
+          <hr class="my-1" />
+
           <div class="d-flex align-items-center justify-content-between">
             <span>Delayed</span>
             <span class="font-weight-bold">{{this.jobCounts.delayed}}</span>
           </div>
 
+          <hr class="my-1" />
+
           <div class="d-flex align-items-center justify-content-between">
             <span>Completed</span>
             <span class="font-weight-bold">{{this.jobCounts.completed}}</span>
           </div>
+
+          <hr class="my-1" />
 
           <div class="d-flex align-items-center justify-content-between">
             <span>Paused</span>
