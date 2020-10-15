@@ -1,0 +1,90 @@
+{{#contentFor 'pageScripts'}}
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    const errorId = '{{errorId}}';
+
+    $('#jobsTable').DataTable({
+      searching: false,
+      info: false,
+      serverSide: true,
+      ajax: function (data, callback, settings) {
+        $.ajax({
+          method: 'GET',
+          url: `/backend/errors/${errorId}/jobs`,
+          data: {
+            start: data.start,
+            size: data.length,
+          },
+          success: function (data, status, jQxhr) {
+            callback({
+              data: data.data,
+              recordsFiltered: data.recordsFiltered,
+            })
+          },
+          error: function (jQxhr, status, error) {
+            console.log(error);
+          },
+        });
+      },
+      columns: [
+        { data: 'group' },
+        { data: 'queue' },
+        { data: 'jobId' },
+        { data: 'date' },
+        {
+          data: 'actions',
+          render: function (data, type, row) {
+            return `
+              <button class="btn btn-primary btn-sm">Retry</button>
+            `;
+          },
+        }
+      ],
+    });
+  });
+</script>
+{{/contentFor}}
+
+{{#contentFor 'pageStyles'}}
+<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div class="text-gray-800">
+    <a class="h6 mr-2 text-uppercase" href="/errors">Errors</a>
+    <span class="mr-2"><i class="fas fa-chevron-right"></i></span>
+    <span class="h6 mr-2 text-uppercase">100</span>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="row">
+
+  <!-- Jobs -->
+  <div class="col-sm-12 mb-2">
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="font-weight-bold text-dark mb-0">Jobs</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="jobsTable">
+            <thead>
+              <tr>
+                <th>Group</th>
+                <th>Queue</th>
+                <th>Job Id</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

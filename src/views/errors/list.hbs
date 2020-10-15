@@ -1,0 +1,84 @@
+{{#contentFor 'pageScripts'}}
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#errorsTable').DataTable({
+      searching: false,
+      info: false,
+      serverSide: true,
+      ajax: function (data, callback, settings) {
+        $.ajax({
+          method: 'GET',
+          url: '/backend/errors',
+          data: {
+            start: data.start,
+            size: data.length,
+          },
+          success: function (data, status, jQxhr) {
+            callback({
+              data: data.data,
+              recordsFiltered: data.recordsFiltered,
+            })
+          },
+          error: function (jQxhr, status, error) {
+            console.log(error);
+          },
+        });
+      },
+      columns: [
+        { data: 'id' },
+        { data: 'error' },
+        { data: 'occurrences' },
+        { data: 'ignore' },
+        {
+          data: 'actions',
+          render: function (data, type, row) {
+            return `<a href="/errors/${row.id}">Jobs</a>`;
+          },
+        }
+      ],
+    });
+  });
+</script>
+{{/contentFor}}
+
+{{#contentFor 'pageStyles'}}
+<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 text-gray-800">
+    Errors
+  </h1>
+</div>
+
+<!-- Content -->
+<div class="row">
+
+  <!-- Jobs -->
+  <div class="col-sm-12 mb-2">
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="font-weight-bold text-dark mb-0">All Errors</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="errorsTable">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Error</th>
+                <th>Occurrences</th>
+                <th>Ignore</th>
+                <th></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

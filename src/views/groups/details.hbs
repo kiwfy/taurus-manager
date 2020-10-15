@@ -1,0 +1,184 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () {
+
+    function getSelectedQueues() {
+      const selected = [];
+      $('.card-selected').each(function (_, element) {
+        selected.push({
+          name: $(element).data('name'),
+          hostId: $(element).data('hostid'),
+        });
+      });
+      return selected;
+    };
+
+    function validateSelectedQueues(queues) {
+      if (queues.length > 0) {
+        return true;
+      }
+      $('#minimumQueuesSelectedToast').toast('show');
+      return false;
+    }
+
+    function dispatchAction(action, queues) {
+      const payload = {
+        queues,
+      };
+      $.ajax({
+        method: 'POST',
+        url: `/backend/queues/${action}`,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location.reload();
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    $('.queue-card').click(function () {
+      $(this).toggleClass('card-selected');
+    });
+
+    $('#select-all-cards').change(function () {
+      if (this.checked) {
+        $('.queue-card').addClass('card-selected');
+        return;
+      }
+      $('.queue-card').removeClass('card-selected');
+    });
+
+    $('#pauseQueuesButton').click(function () {
+      const queues = getSelectedQueues();
+      if (validateSelectedQueues(queues)) {
+        return dispatchAction('pause', queues);
+      }
+    });
+
+    $('#resumeQueuesButton').click(function () {
+      const queues = getSelectedQueues();
+      if (validateSelectedQueues(queues)) {
+        return dispatchAction('resume', queues);
+      }
+    });
+
+  });
+</script>
+{{/contentFor}}
+
+{{#contentFor 'pageStyles'}}
+<style>
+  .card-selected {
+    border: 1px solid #4e73df;
+  }
+</style>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div>
+    <div class="text-xs">Group:</div>
+    <h1 class="h3 text-gray-800">{{ groupName }}</h1>
+  </div>
+
+  <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center mr-3">
+      <input type="checkbox" id="select-all-cards" role="button" class="mr-1">
+      <span>Select all</span>
+    </div>
+
+    {{#if loggedUser.permissions.pauseQueue}}
+    <div class="dropdown mr-2">
+      <button class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+        Actions
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#resumeQueuesDialog">Resume</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#pauseQueuesDialog">Pause</a>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Queues -->
+<div class="row">
+  {{#each queues}}
+  <div class="col-sm-3">
+    <div class="card shadow mb-3 queue-card" role="button" data-name="{{ this.name }}" data-hostid="{{ this.hostId }}">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <a class="text-gray-800 text-uppercase font-weight-bold" href="/queues/{{this.group}}/{{this.hostId}}/{{this.name}}">{{ this.name }}</a>
+            {{#if this.isPaused}}
+            <i class="fas fa-pause-circle text-warning ml-3"></i>
+            {{else}}
+            <i class="fas fa-check-circle text-success ml-3"></i>
+            {{/if}}
+          </div>
+        </div>
+        <hr>
+        <div class="mt-1">
+
+          <div class="d-flex align-items-center justify-content-between my-1">
+            <span class="h5 my-0">Waiting</span>
+            <span class="h5 my-0 font-weight-bold">{{this.jobCounts.waiting}}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between my-1">
+            <span class="h5 my-0">Failed</span>
+            <span class="h5 my-0 font-weight-bold">{{this.jobCounts.failed}}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Active</span>
+            <span class="font-weight-bold">{{this.jobCounts.active}}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Delayed</span>
+            <span class="font-weight-bold">{{this.jobCounts.delayed}}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Completed</span>
+            <span class="font-weight-bold">{{this.jobCounts.completed}}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Paused</span>
+            <span class="font-weight-bold">{{this.jobCounts.paused}}</span>
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-end">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+<!-- Alerts -->
+{{> alert alertId='minimumQueuesSelectedToast' alertColor='danger' alertText='Please, select at least 1 queue.'}}
+
+<!-- Dialogs -->
+{{> modal
+  dialogId='pauseQueuesDialog'
+  dialogText='You are about to pause these queues. Do you confirm this action?'
+  title='Pause queues'
+  yesButtonId='pauseQueuesButton'
+  yesButtonColor='warning'
+  yesButtonText='Pause'
+}}
+
+{{> modal
+  dialogId='resumeQueuesDialog'
+  dialogText='You are about to resume these queues. Do you confirm this action?'
+  title='Resume queues'
+  yesButtonId='resumeQueuesButton'
+  yesButtonColor='success'
+  yesButtonText='Resume'
+}}

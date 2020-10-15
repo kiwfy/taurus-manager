@@ -1,0 +1,83 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <a class="sidebar-brand d-sm-flex align-items-center justify-content-center" href="/queues">
+    <span class="mr-1">Taurus</span>
+    <span class="text-xs text-info">Manager</span>
+  </a>
+
+  <hr class="sidebar-divider my-0">
+
+  <hr class="sidebar-divider">
+
+  <div class="sidebar-heading">
+    Manager
+  </div>
+
+  <li class="nav-item sidebar-item-queues">
+    <a class="nav-link" href="/queues">
+      <i class="fas fa-fw fa-stream"></i>
+      <span>Queues</span>
+    </a>
+  </li>
+
+  <li class="nav-item sidebar-item-groups">
+    <a class="nav-link" href="/groups">
+      <i class="fas fa-fw fa-layer-group"></i>
+      <span>Groups</span>
+    </a>
+  </li>
+
+  <li class="nav-item sidebar-item-errors">
+    <a class="nav-link" href="/errors">
+      <i class="fas fa-fw fa-bug"></i>
+      <span>Errors</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+
+  {{#if loggedUser.permissions.manageUsers}}
+  <div class="sidebar-heading">
+    Settings
+  </div>
+
+  <li class="nav-item sidebar-item-users">
+    <a class="nav-link" href="/users">
+      <i class="fas fa-fw fa-users"></i>
+      <span>Users</span>
+    </a>
+  </li>
+  {{/if}}
+
+  <li class="nav-item sidebar-item-users">
+    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutDialog">
+      <i class="fas fa-fw fa-at"></i>
+      <span>About</span>
+    </a>
+  </li>
+</ul>
+
+<div class="modal fade" id="aboutDialog" role="dialog" data-backdrop="static" data-keywboard="false">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-sm-12 d-flex justify-content-between">
+            <span class="font-weight-bold">Taurus Manager 2.0.0</span>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-end">
+            <span class="text-xs">
+              <i class="fas fa-mug-hot mr-1"></i>
+              Powered by Kiwfy
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

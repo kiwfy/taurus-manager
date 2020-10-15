@@ -1,0 +1,89 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () { 
+    
+    $('#loginForm').submit(function (e) {
+      e.preventDefault();
+
+      const email = $('[name=email]').val();
+      const password = $('[name=password]').val();
+
+      if (!email || !password) {
+        $('#fillAllFieldsToast').toast('show');
+        return false;
+      }
+
+      const payload = {
+        email,
+        password,
+      };
+
+      $.ajax({
+        method: 'POST',
+        url: '/backend/sessions',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      })
+      .done((data) => {
+        window.location.href = `/${data.data}`;
+      })
+      .fail((err) => {
+        const { responseJSON } = err;
+        const requestErrorToast = $('#requestErrorToast');
+        requestErrorToast.find('.toast-body').html(responseJSON.error);
+        requestErrorToast.toast('show');
+      });
+    });
+
+  });
+</script>
+{{/contentFor}}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-xl-6">
+      <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+          <div class="row">
+            <div class="col-lg-12 d-flex justify-content-center">
+              <div class="p-5 w-100">
+                <div class="d-flex justify-content-center align-items-center mb-4">
+                  <div>
+                    <i class="fas fa-2x fa-layer-group text-primary mr-2"></i>
+                  </div>
+                  <div>
+                    <div class="text-xs text-uppercase">Welcome to</div>
+                    <h1 class="h4 text-gray-700 text-uppercase">Taurus Manager</h1>
+                  </div>
+                </div>
+                <form class="user" id="loginForm">
+                  <div class="form-group">
+                    <input type="email" name="email" class="form-control form-control-user" placeholder="Email">
+                  </div>
+                  <div class="form-group">
+                    <input type="password" name="password" class="form-control form-control-user" placeholder="Password">
+                  </div>
+                  <button class="btn btn-primary btn-user btn-block" type="submit">
+                    Enter
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts -->
+{{> alert
+  alertId='fillAllFieldsToast'
+  alertColor='danger'
+  alertText='Please, fill all fields.'
+}}
+
+{{> alert
+  alertId='requestErrorToast'
+  alertColor='danger'
+}}

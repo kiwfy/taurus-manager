@@ -1,0 +1,24 @@
+{{!< html-struct}}
+
+<body id="page-top">
+  <div id="wrapper">
+
+  {{> sidebar}}
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+      {{> topbar }}
+
+      <div class="container-fluid">
+        {{{body}}}
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Partials are common snippets to be used 1 or more pages. -->
+  {{> scripts}}
+
+  <!-- A block is placeholder for pieces of content defined in a page. -->
+  {{{block 'pageScripts'}}}
+</body>

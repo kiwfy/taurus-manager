@@ -1,0 +1,19 @@
+<div class="modal fade" id="{{dialogId}}" role="dialog" data-backdrop="static" data-keywboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{title}}</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{dialogText}}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm shadow" type="button" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-{{yesButtonColor}} btn-sm shadow" id="{{yesButtonId}}" type="button" data-dismiss="modal">{{yesButtonText}}</button>
+      </div>
+    </div>
+  </div>
+</div>

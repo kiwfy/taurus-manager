@@ -1,0 +1,260 @@
+{{#contentFor 'pageStyles'}}
+<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{/contentFor}}
+
+{{#contentFor 'pageScripts'}}
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    const queueHostId = '{{queueHostId}}';
+    const queueName = '{{queueName}}';
+    const queueStatus = '{{queueStatus}}';
+
+    const jobsTable = $('#jobsTable').DataTable({
+      columnDefs: [{
+        targets: [0],
+        orderable: false,
+      }],
+      searching: false,
+      info: false,
+      lengthMenu: [10, 50, 100, 1000],
+      paging: true,
+      pageLength: 10,
+      ajax: function (data, callback, settings) {
+        $.ajax({
+          url: `/backend/queues/${queueHostId}/${queueName}/${queueStatus}/jobs`,
+          type: 'GET',
+          data: {
+            start: data.start,
+            size: data.length,
+          },
+          success: function (data, status, jQxhr) {
+            callback({
+              data: data.data,
+              recordsFiltered: data.recordsFiltered,
+            })
+          },
+          error: function (jQxhr, status, error) {
+            console.log(error);
+          },
+        })
+      },
+      serverSide: true,
+      columns: [
+        {
+          data: 'selected',
+          render: function (data, type, row) {
+            const { id } = row;
+            return `<input type="checkbox" role="button" class="job-checkbox" data-jobid="${id}">`;
+          },
+        },
+        {
+          data: 'id' ,
+          render: function (data, type, row) {
+            const { id } = row;
+            const groupName = '{{groupName}}';
+            const queueHostId = '{{queueHostId}}';
+            const queueName = '{{queueName}}';
+            const queueStatus = '{{queueStatus}}';
+            return `<a href="/queues/${groupName}/${queueHostId}/${queueName}/${queueStatus}/${id}">${id}</a>`;
+          }
+        },
+        { data: 'name' },
+        { data: 'attempts' },
+        { data: 'time' },
+      ],
+    });
+
+    function dispatchAction(action, jobs = []) {
+      const queueHostId = '{{queueHostId}}';
+      const queueName = '{{queueName}}';
+      const queueStatus = '{{queueStatus}}';
+
+      const payload = {
+        queueHostId,
+        queueName,
+        queueStatus,
+        jobs,
+      };
+
+      $.ajax({
+        method: 'POST',
+        url: `/backend/queues/jobs/${action}`,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location.reload();
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    function getSelectedJobs() {
+      const selectedJobs = [];
+      $('#jobsTable tbody tr').each((_, element) => {
+        const checkbox = $(element).find('.job-checkbox');
+        if (checkbox.is(':checked')) {
+          selectedJobs.push(
+            checkbox.data('jobid')
+          );
+        }
+      });
+      return selectedJobs;
+    };
+
+    function validateSelected(jobs) {
+      if (jobs.length === 0) {
+        $('#minimumJobsSelectedToast').toast('show');
+        return false;
+      }
+      return true;
+    }
+
+    $('#selectAllCheckbox').change(function () {
+      $('.job-checkbox').prop('checked', this.checked);
+    });
+
+    $('#removeSelectedJobsButton').click(function () {
+      const jobs = getSelectedJobs();
+      if (validateSelected(jobs)) {
+        dispatchAction('remove', jobs);
+      }
+    });
+
+    $('#retrySelectedJobsButton').click(function () {
+      const jobs = getSelectedJobs();
+      if (validateSelected(jobs)) {
+        dispatchAction('retry', jobs);
+      }
+    });
+
+    $('#retryAllJobsButton').click(function () {
+      dispatchAction('retry-all');
+    });
+
+    $('#exportJobsButton').click(function () {
+      window.location += '/export';
+    });
+  });
+</script>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div class="text-gray-800">
+    <a class="h6 mr-2 text-uppercase" href="/groups/{{ groupName }}">{{ groupName }}</a>
+    <span class="mr-2"><i class="fas fa-chevron-right"></i></span>
+    <a class="h6 mr-2 text-uppercase"
+      href="/queues/{{ groupName }}/{{ queueHostId }}/{{ queueName }}">{{ queueName }}</a>
+    <span class="mr-2"><i class="fas fa-chevron-right"></i></span>
+    <span class="h6 text-uppercase">{{ queueStatus }}</span>
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="d-flex mb-2 flex-wrap">
+  {{#if loggedUser.permissions.removeJobs}}
+  <button class="btn btn-danger btn-sm shadow m-1" data-toggle="modal" data-target="#removeSelectedJobsDialog">
+    <i class="fas fa-times mr-1"></i>
+    Remove selected
+  </button>
+  {{/if}}
+  
+  {{#if loggedUser.permissions.retryJobs}}
+    {{#ifEquals queueStatus 'failed'}}
+    <button class="btn btn-primary btn-sm shadow m-1" data-toggle="modal" data-target="#retrySelectedJobsDialog">
+      <i class="fas fa-redo mr-1"></i>
+      Retry selected
+    </button>
+    <button class="btn btn-primary btn-sm shadow m-1" data-toggle="modal" data-target="#retryAllJobsDialog">
+      <i class="fas fa-sync mr-1"></i>
+      Retry all
+    </button>
+    {{/ifEquals}}
+  {{/if}}
+
+  <button class="btn btn-sm btn-primary shadow m-1" id="exportJobsButton">
+    <i class="fas fa-file-export mr-1"></i>
+    Export
+  </button>
+</div>
+
+<!-- Content -->
+<div class="row">
+
+  <!-- Jobs -->
+  <div class="col-sm-12 mb-2">
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="font-weight-bold text-primary mb-0">Jobs</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="jobsTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" role="button" id="selectAllCheckbox"></th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Attempts</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Dialogs -->
+{{> modal
+  dialogId='removeSelectedJobsDialog'
+  dialogText='You are about to remove these jobs. Do you confirm this action?'
+  title='Remove selected jobs'
+  yesButtonId='removeSelectedJobsButton'
+  yesButtonColor='danger'
+  yesButtonText='Remove'
+}}
+
+{{> modal
+  dialogId='retrySelectedJobsDialog'
+  dialogText='You are about to retry these jobs. Do you confirm this action?'
+  title='Retry selected jobs'
+  yesButtonId='retrySelectedJobsButton'
+  yesButtonColor='primary'
+  yesButtonText='Retry'
+}}
+
+{{> modal
+  dialogId='retryAllJobsDialog'
+  dialogText='You are about to retry all jobs. Do you confirm this action?'
+  title='Retry all jobs'
+  yesButtonId='retryAllJobsButton'
+  yesButtonColor='primary'
+  yesButtonText='Retry'
+}}
+
+<div class="modal fade show" id="jobLogsDialog" role="dialog" data-backdrop="static" data-keywboard="false">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="content"></code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts -->
+{{> alert
+  alertId='minimumJobsSelectedToast'
+  alertColor='danger'
+  alertText='No jobs selected!'
+}}

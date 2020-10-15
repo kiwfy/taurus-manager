@@ -1,0 +1,335 @@
+{{#contentFor 'pageScripts'}}
+<script src="/vendor/chart.js/Chart.min.js"></script>
+<script src="/js/charts/queue-status-pie-chart.js"></script>
+<script>
+  $(document).ready(function () {
+    loadQueueStatusPieChart([
+      '{{queue.jobCounts.failed}}',
+      '{{queue.jobCounts.waiting}}',
+      '{{queue.jobCounts.active}}',
+      '{{queue.jobCounts.delayed}}',
+      '{{queue.jobCounts.paused}}',
+      '{{queue.jobCounts.completed}}',
+    ]);
+
+    function dispatchAction(action, queues) {
+      const payload = {
+        queues,
+      };
+      $.ajax({
+        method: 'POST',
+        url: `/backend/queues/${action}`,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location.reload();
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    function getQueue() {
+      return {
+        name: $('.queue-title').data('name'),
+        hostId: $('.queue-title').data('hostid'),
+      };
+    }
+
+    $('.status-card').click(function () {
+      const status = $(this).data('status');
+      window.location += `/${status}`;
+    });
+
+    $('#pauseQueueButton').click(function () {
+      const queue = getQueue();
+      dispatchAction('pause', [queue]);
+    });
+
+    $('#resumeQueueButton').click(function () {
+      const queue = getQueue();
+      dispatchAction('resume', [queue]);
+    });
+
+    $('#formatJobJsonButton').click(function () {
+      const json = $('#addJobJson').val();
+      const parsed = JSON.parse(json);
+      const string = JSON.stringify(parsed, undefined, 4);
+
+      $('#addJobJson').val(string);
+    });
+
+    $('#addJobJson').keyup(function () {
+      try {
+        JSON.parse($(this).val());
+        $('#addJobButton').prop('disabled', false);
+        $('#formatJobJsonButton').prop('disabled', false);
+      } catch (e) {
+        $('#addJobButton').prop('disabled', true);
+        $('#formatJobJsonButton').prop('disabled', true);
+      }
+    });
+
+    $('#addJobButton').click(function () {
+      const queueName = $(this).data('name');
+      const queueHostId = $(this).data('hostid');
+      const data = JSON.parse($('#addJobJson').val());
+
+      const payload = {
+        queueName,
+        queueHostId,
+        data,
+      };
+
+      $.ajax({
+        url: '/backend/queues/jobs',
+        type: 'POST',
+        data: JSON.stringify(payload),
+        contentType: 'application/json'
+      }).done(() => {
+        $('#addJobDialog').modal('hide');
+        $('#jobAddedToast').toast('show');
+      }).fail((jqXHR) => {
+        console.error(jqXHR.responseText);
+      });
+    });
+  });
+</script>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between">
+  <div class="text-gray-800 mb-4">
+    <a class="h6 mr-2 text-uppercase" href="/groups/{{ queue.group }}">{{ queue.group }}</a>
+    <span class="mr-2"><i class="fas fa-chevron-right"></i></span>
+    <span class="h6 mr-2 text-uppercase queue-title" data-name="{{ queue.name }}" data-hostid="{{ queue.hostId }}">{{ queue.name }}</span>
+  </div>
+
+
+  <div class="d-flex align-items-center mb-4">
+    <div class="d-flex align-items-center mr-3">
+      {{#if queue.isPaused}}
+      <i class="fas fa-pause-circle text-warning mr-2"></i>
+      <span>Paused</span>
+      {{else}}
+      <i class="fas fa-check-circle text-success mr-2"></i>
+      <span>Running</span>
+      {{/if}}
+    </div>
+
+    {{#if loggedUser.permissions.pauseQueue}}
+    {{#if queue.isPaused}}
+    <button class="btn btn-success btn-sm shadow mr-2" data-toggle="modal" data-target="#resumeQueueDialog">
+      <i class="fas fa-play-circle mr-1"></i>
+      Resume
+    </button>
+    {{else}}
+    <button class="btn btn-warning text-gray-800 btn-sm shadow mr-2" data-toggle="modal"
+      data-target="#pauseQueueDialog">
+      <i class="fas fa-pause-circle mr-1"></i>
+      Pause
+    </button>
+    {{/if}}
+    {{/if}}
+
+    {{#if loggedUser.permissions.addJobs}}
+    <button class="btn btn-primary btn-sm shadow" data-toggle="modal" data-target="#addJobDialog">
+      <i class="fas fa-plus-circle mr-1"></i>
+      Add job
+    </button>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Information -->
+<div class="row">
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-danger text-danger status-card" role="button" data-status="failed">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Failed</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.failed }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-primary text-primary status-card" role="button" data-status="waiting">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Waiting</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.waiting }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-hourglass-end fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-primary text-primary status-card" role="button" data-status="active">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Active</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.active }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-cogs fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-primary text-primary status-card" role="button" data-status="delayed">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Delayed</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.delayed }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-clock fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-primary text-primary status-card" role="button" data-status="paused">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Paused</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.paused }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-pause-circle fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm mb-4">
+    <div class="card shadow border-bottom-primary text-primary status-card" role="button" data-status="completed">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div class="text-xs font-weight-bold text-uppercase mb-1">Completed</div>
+            <span class="h5 mb-0 font-weight-bold text-gray-800">{{ queue.jobCounts.completed }}</span>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="col-sm">
+
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="font-weight-bold text-primary m-0">Last jobs status</h6>
+      </div>
+      <div class="card-body">
+        <div>
+          <canvas id="queueStatusPieChart" height="300"></canvas>
+        </div>
+        <div class="mt-4 text-center small">
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #003f5c;"></i>
+            Failed
+          </span>
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #444e86;"></i>
+            Waiting
+          </span>
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #36b9cc;"></i>
+            Active
+          </span>
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #dd5182;"></i>
+            Delayed
+          </span>
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #ff6e54;"></i>
+            Paused
+          </span>
+          <span class="mr-2">
+            <i class="fas fa-circle" style="color: #ffa600;"></i>
+            Completed
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Alerts -->
+{{> alert
+  alertId='jobAddedToast'
+  alertColor='success'
+  alertText='Job added successfully!'
+}}
+
+<!-- Dialogs -->
+{{> modal
+  dialogId='pauseQueueDialog'
+  dialogText='You are about to pause this queue. Do you confirm this action?'
+  title='Pause queue'
+  yesButtonId='pauseQueueButton'
+  yesButtonColor='warning'
+  yesButtonText='Pause'
+}}
+
+{{> modal
+  dialogId='resumeQueueDialog'
+  dialogText='You are about to resume this queue. Do you confirm this action?'
+  title='Resume queue'
+  yesButtonId='resumeQueueButton'
+  yesButtonColor='success'
+  yesButtonText='Resume'
+}}
+
+<div class="modal fade" id="addJobDialog" role="dialog" data-backdrop="static" data-keywboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add job</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control w-100" rows="10" id="addJobJson"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-info btn-sm shadow pull-left" id="formatJobJsonButton" type="button"
+          disabled>Format</button>
+        <button class="btn btn-primary btn-sm shadow" id="addJobButton" type="button" data-dismiss="modal"
+          data-name="{{ queue.name }}" data-hostid="{{ queue.hostId }}" disabled>Add</button>
+      </div>
+    </div>
+  </div>
+</div>

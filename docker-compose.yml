@@ -1,0 +1,13 @@
+version: "3"
+services:
+  sieha:
+    hostname: sieha
+    container_name: sieha
+    image: sieha
+    build: docker
+    ports:
+      - "8201:8201"
+    expose:
+      - 8201
+    volumes:
+      - ./:/usr/src

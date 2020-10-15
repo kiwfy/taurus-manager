@@ -1,0 +1,88 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () {
+
+    $('.remove-user-button').click(function () {
+      const userId = $(this).data('userid');
+
+      $('#selectedUserId').val(userId);
+      $('#removeUserDialog').modal('show');
+    });
+
+    $('#confirmRemoveUserButton').click(function () {
+      const userId = $('#selectedUserId').val();
+
+      $.ajax({
+        method: 'DELETE',
+        url: `/backend/users/${userId}`,
+        contentType: 'application/json',
+      }).done(() => {
+        window.location.reload();
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    });
+
+    $('.edit-user-button').click(function () {
+      const userId = $(this).data('userid');
+      window.location += `/${userId}`;
+    });
+
+  });
+</script>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Users</h1>
+  <a href="/users/new" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+    <i class="fas fa-plus-circle mr-1"></i> Create user</a>
+</div>
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+    <h6 class="m-0 font-weight-bold text-dark">
+      All Users
+    </h6>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each users}}
+          <tr class="vertical-center">
+            <td>{{ this.name }}</td>
+            <td>{{ this.email }}</td>
+            <td>{{ this.role }}</td>
+            <td>
+              <button class="btn btn-primary btn-sm shadow edit-user-button" data-userid="{{ this.id }}">Edit</button>
+              <button class="btn btn-danger btn-sm shadow remove-user-button"
+                data-userid="{{ this.id }}">Remove</button>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<input type="hidden" id="selectedUserId" />
+
+<!-- Dialogs -->
+{{> modal
+  dialogId='removeUserDialog'
+  dialogText='You are about to remove this user. Do you confirm this action?'
+  title='Remove user'
+  yesButtonId='confirmRemoveUserButton'
+  yesButtonColor='danger'
+  yesButtonText='Remove'
+}}

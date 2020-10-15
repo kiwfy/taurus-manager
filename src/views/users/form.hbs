@@ -1,0 +1,191 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () {
+    const id = '{{id}}';
+
+    $('#groupsSelect').select2();
+
+    function createUser() {
+      const payload = {
+        name: $('[name=name]').val(),
+        email: $('[name=email]').val(),
+        password: $('[name=password]').val(),
+        role: $('[name=role]').val(),
+        groups: $('[name=groups]').val(),
+      };
+
+      $.ajax({
+        method: 'POST',
+        url: '/backend/users',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location = document.referrer;
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    function updateUser() {
+      const payload = {
+        name: $('[name=name]').val(),
+        password: $('[name=password]').val(),
+        role: $('[name=role]').val(),
+        groups: $('[name=groups]').val(),
+      };
+
+      $.ajax({
+        method: 'PUT',
+        url: `/backend/users/${id}`,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location = document.referrer;
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    function loadUser() {
+      if (!id) {
+        return;
+      }
+
+      const role = '{{user.role}}';
+      const groups = '{{user.groups}}';
+      const groupsArray = groups.split(',');
+
+      $('[name=role]').val(role);
+      $('[name=groups]').val(groupsArray);
+      $('[name=groups]').select2().trigger('change');
+      $('[name=email]').prop('disabled', true);
+    }
+
+    function validateFields() {
+      const name = $('[name=name]').val();
+      if (name.length === 0) {
+        return false;
+      }
+
+      const email = $('[name=email]').val();
+      if (email.length === 0) {
+        return false;
+      }
+
+      const password = $('[name=password]').val();
+      if (password.length === 0) {
+        return false;
+      }
+
+      const role = $('[name=role]').val();
+      if (role.length === 0) {
+        return false;
+      }
+
+      const groups = $('[name=groups]').val();
+      if (groups.length === 0) {
+        return false;
+      }
+
+      return true;
+    }
+
+    $('#userForm').submit(function (e) {
+      e.preventDefault();
+
+      if (!validateFields()) {
+        $('#fillAllFieldsToast').toast('show');
+        return;
+      }
+
+      if (id) {
+        return updateUser();
+      }
+
+      createUser();
+    });
+
+    $('#cancelButton').click(function () {
+      window.location = document.referrer;
+    });
+
+    loadUser();
+  });
+</script>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  {{#if id}}
+  <h1 class="h3 mb-0 text-gray-800">Edit user</h1>
+  {{else}}
+  <h1 class="h3 mb-0 text-gray-800">New user</h1>
+  {{/if}}
+</div>
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+    <h6 class="m-0 font-weight-bold text-dark">
+      User data
+    </h6>
+  </div>
+  <div class="card-body">
+
+    <form id="userForm">
+      <div class="row">
+        <div class="col-xs-12 col-md-6 mb-3">
+          <label>Name</label>
+          <input class="form-control" type="text" name="name" value="{{user.name}}">
+        </div>
+        <div class="col-xs-12 col-md-6 mb-3">
+          <label>Email</label>
+          <input class="form-control" type="text" name="email" value="{{user.email}}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-md-6 mb-3">
+          <label>Password</label>
+          <input class="form-control" type="password" name="password" value="{{user.password}}">
+        </div>
+        <div class="col-xs-12 col-md-6 mb-3">
+          <label>Role</label>
+          <select class="form-control" type="text" name="role">
+            <option value="reader">Reader</option>
+            <option value="controller">Controller</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-md-6 mb-3">
+          <label>Groups</label>
+          <select class="form-control" name="groups" id="groupsSelect" multiple="multiple">
+            {{#each groups}}
+            <option value="{{ this }}">{{ this }}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12 text-right">
+          <button class="btn btn-secondary btn-sm shadow" id="cancelButton" type="button">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button class="btn btn-primary btn-sm shadow" type="submit">
+            <i class="fas fa-save"></i>
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Alerts -->
+{{> alert
+  alertId='fillAllFieldsToast'
+  alertColor='danger'
+  alertText='Please, fill all fields.'
+}}

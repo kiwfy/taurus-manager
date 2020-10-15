@@ -1,0 +1,7 @@
+.select2 {
+  width: 100% !important;
+}
+
+tr.vertical-center td {
+  vertical-align: middle;
+}
