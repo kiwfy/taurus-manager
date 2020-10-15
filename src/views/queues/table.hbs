@@ -1,0 +1,144 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () {
+
+    function getSelectedQueues() {
+      const selected = [];
+      $('.select-queue').each((_, element) => {
+        const checked = $(element).is(':checked');
+        if (checked) {
+          selected.push({
+            name: $(element).data('name'),
+            hostId: $(element).data('hostid'),
+          });
+        }
+      });
+      return selected;
+    };
+
+    function validateSelectedQueues(queues) {
+      if (queues.length > 0) {
+        return true;
+      }
+      $('#minimumQueuesSelectedToast').toast('show');
+      return false;
+    }
+
+    function dispatchAction(action, queues) {
+      const payload = {
+        queues,
+      };
+      $.ajax({
+        method: 'POST',
+        url: `/backend/queues/${action}`,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+      }).done(() => {
+        window.location.reload();
+      }).fail((err) => {
+        console.log(err.responseText);
+      });
+    }
+
+    $('#selectAllQueues').change(function () {
+      $('.select-group-queues').prop('checked', this.checked);
+      $('.select-queue').prop('checked', this.checked);
+    });
+
+    $('#pauseQueuesButton').click(function () {
+      const queues = getSelectedQueues();
+      if (validateSelectedQueues(queues)) {
+        return dispatchAction('pause', queues);
+      }
+    });
+
+    $('#resumeQueuesButton').click(function () {
+      const queues = getSelectedQueues();
+      if (validateSelectedQueues(queues)) {
+        return dispatchAction('resume', queues);
+      }
+    });
+
+  });
+</script>
+{{/contentFor}}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 text-gray-800">
+    Queues
+  </h1>
+
+  <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center mr-3">
+      <input type="checkbox" id="selectAllQueues" role="button" class="mr-1">
+      <span>Select all</span>
+    </div>
+
+    {{#if loggedUser.permissions.pauseQueue}}
+    <div class="dropdown mr-2">
+      <button class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+        Actions
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#resumeQueuesDialog">Resume</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#pauseQueuesDialog">Pause</a>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Queues -->
+{{#each groupedQueues}}
+<div class="row mb-5">
+
+  <div class="col-sm-12">
+    <div class="text-xs">Group:</div>
+    <a href="/groups/{{this.group}}">
+      <h1 class="h4 mb-3">{{ this.group }}</h1>
+    </a>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="mb-0 font-weight-bold">Queues</h6>
+      </div>
+      <div class="card-body">
+        {{> queues/table
+          group=this.group
+          queues=this.queues
+        }}
+      </div>
+    </div>
+  </div>
+
+</div>
+{{/each}}
+
+<!-- Alerts -->
+{{> alert
+  alertId='minimumQueuesSelectedToast'
+  alertColor='danger'
+  alertText='Please, select at least 1 queue.'
+}}
+
+<!-- Dialogs -->
+{{> modal
+  dialogId='pauseQueuesDialog'
+  dialogText='You are about to pause these queues. Do you confirm this action?'
+  title='Pause queues'
+  yesButtonId='pauseQueuesButton'
+  yesButtonColor='warning'
+  yesButtonText='Pause'
+}}
+
+{{> modal
+  dialogId='resumeQueuesDialog'
+  dialogText='You are about to resume these queues. Do you confirm this action?'
+  title='Resume queues'
+  yesButtonId='resumeQueuesButton'
+  yesButtonColor='success'
+  yesButtonText='Resume'
+}}

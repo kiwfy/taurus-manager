@@ -1,0 +1,57 @@
+{{#contentFor 'pageScripts'}}
+<script>
+  $(document).ready(function () {
+
+    $('.select-group-queues').change(function () {
+      const group = $(this).data('group');
+      const checked = this.checked;
+      $(`#${group}-queues-table .select-queue`).each(function (_, element) {
+        $(element).prop('checked', checked);
+      });
+    });
+
+  });
+</script>
+{{/contentFor}}
+
+<div class="table-responsive">
+  <table class="table table-hover" class="group-queue-table" id="{{group}}-queues-table">
+    <thead>
+      <tr>
+        <th><input class="select-group-queues" role="button" data-group="{{ group }}" type="checkbox"></th>
+        <th>Queue</th>
+        <th>Status</th>
+        <th>Paused</th>
+        <th>Waiting</th>
+        <th>Active</th>
+        <th>Delayed</th>
+        <th>Failed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each queues}}
+      <tr>
+        <td><input role="button" class="select-queue" type="checkbox" data-name="{{ this.name }}"
+            data-hostid="{{ this.hostId }}"=></td>
+        <td class="text-nowrap" style="width: 300px;">
+          <a href="/queues/{{../group}}/{{this.hostId}}/{{this.name}}">{{ this.hostId }}/{{ this.name }}</a>
+        </td>
+        <td class="text-nowrap">
+          {{#if this.isPaused}}
+          <i class="fas fa-sm fa-pause-circle text-warning mr-1"></i>
+          Paused
+          {{else}}
+          <i class="fas fa-sm fa-check-circle text-success mr-1"></i>
+          Running
+          {{/if}}
+        </td>
+        <td>{{ this.jobCounts.paused }}</td>
+        <td>{{ this.jobCounts.waiting }}</td>
+        <td>{{ this.jobCounts.active }}</td>
+        <td>{{ this.jobCounts.delayed }}</td>
+        <td>{{ this.jobCounts.failed }}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

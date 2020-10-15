@@ -7,7 +7,7 @@ const handler = async (req, res) => {
     loggedUser.groups
   );
 
-  return res.render('queues/list', {
+  return res.render('queues/table', {
     loggedUser: req.session.user,
     groupedQueues,
   });

@@ -4,7 +4,7 @@ const handler = async (req, res) => {
   const sortedQueues = await queues.listSorted();
   const queuesList = queues.filter(sortedQueues, { group: groupName });
 
-  return res.render('groups/details', {
+  return res.render('groups/table', {
     loggedUser: req.session.user,
     groupName,
     queues: queuesList,
