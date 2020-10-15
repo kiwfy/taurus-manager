@@ -8,7 +8,7 @@ module.exports = {
   },
   controller: {
     pauseQueue: true,
-    manageUsers: true,
+    manageUsers: false,
     addJobs: true,
     retryJobs: true,
     removeJobs: false,
