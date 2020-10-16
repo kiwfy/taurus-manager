@@ -1,16 +1,10 @@
-# SIEHA - Simple Express-Handlebars Admin
+# Taurus Manager
 
 [![Latest Version](https://img.shields.io/github/v/release/kiwfy/simple-express-handlebars-admin.svg?style=flat-square)](https://github.com/kiwfy/simple-express-handlebars-admin/releases)
 [![Build Status](https://img.shields.io/github/workflow/status/kiwfy/simple-express-handlebars-admin/CI?label=ci%20build&style=flat-square)](https://github.com/kiwfy/simple-express-handlebars-admin/actions?query=workflow%3ACI)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-SIEHA stands for Simple Express-Handlebars Admin.
-
-The project has 3 main folders inside the `src` folder:
-
-- `routes` - frontend pages (those that render the application pages) may be added in the file `dashboard.js`. Backend routes may be added in the file `api.js`.
-- `utils` - contains express-hbs custom helpers for the application.
-- `views` - contains .hbs files for the application frontend (pages and layouts).
+The perfect platform to organize and manage your Taurus queues. This is a dashboard to control the status and performance of queues and jobs with resources for debugging and failure management. Everything with an authentication layer and permissions by user.
 
 ### Installation
 
@@ -35,9 +29,9 @@ docker-compose up
 
 ### Development
 
-Want to contribute? Great!
+Do you wanna contribute? Great!
 
-The project using a simple code.
+This project has a simple code.
 Make a change in your file and be careful with your updates!
 **Any new code will only be accepted with all validations.**
 
