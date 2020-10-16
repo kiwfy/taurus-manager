@@ -30,26 +30,26 @@
     </thead>
     <tbody>
       {{#each queues}}
-      <tr>
+      <tr class="queue-{{ ../group }}-{{ this.hostId }}-{{ this.name }}">
         <td><input role="button" class="select-queue" type="checkbox" data-name="{{ this.name }}"
             data-hostid="{{ this.hostId }}"=></td>
         <td class="text-nowrap" style="width: 300px;">
           <a href="/queues/{{../group}}/{{this.hostId}}/{{this.name}}">{{ this.hostId }}/{{ this.name }}</a>
         </td>
-        <td class="text-nowrap">
+        <td class="status text-nowrap">
           {{#if this.isPaused}}
-          <i class="fas fa-sm fa-pause-circle text-warning mr-1"></i>
-          Paused
+          <i class="fas fa-sm fa-pause-circle text-warning mr-1 status-icon"></i>
+          <span class="status-name">Paused</span>
           {{else}}
-          <i class="fas fa-sm fa-check-circle text-success mr-1"></i>
-          Running
+          <i class="fas fa-sm fa-check-circle text-success mr-1 status-icon"></i>
+          <span class="status-name">Running</span>
           {{/if}}
         </td>
-        <td>{{ this.jobCounts.paused }}</td>
-        <td>{{ this.jobCounts.waiting }}</td>
-        <td>{{ this.jobCounts.active }}</td>
-        <td>{{ this.jobCounts.delayed }}</td>
-        <td>{{ this.jobCounts.failed }}</td>
+        <td class="paused-count">{{ this.jobCounts.paused }}</td>
+        <td class="waiting-count">{{ this.jobCounts.waiting }}</td>
+        <td class="active-count">{{ this.jobCounts.active }}</td>
+        <td class="delayed-count">{{ this.jobCounts.delayed }}</td>
+        <td class="failed-count">{{ this.jobCounts.failed }}</td>
       </tr>
       {{/each}}
     </tbody>

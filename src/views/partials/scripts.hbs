@@ -17,9 +17,48 @@
     return null;
   }
 
-  let { pathname } =  window.location;
+  function refreshQueues() {
+    $.ajax({
+      method: 'GET',
+      url: `/backend/queues`,
+      contentType: 'application/json',
+    }).done((data) => {
+
+      data.queues.forEach((item) => {
+        const group = item.group;
+        item.queues.forEach((queue) => {
+          const row = $(`.queue-${group}-${queue.hostId}-${queue.name}`);
+          row.find('.paused-count').html(queue.jobCounts.paused);
+          row.find('.waiting-count').html(queue.jobCounts.waiting);
+          row.find('.active-count').html(queue.jobCounts.active);
+          row.find('.delayed-count').html(queue.jobCounts.delayed);
+          row.find('.failed-count').html(queue.jobCounts.failed);
+
+          if (queue.isPaused) {
+            row.find('.status > .status-icon').removeClass('fa-check-circle');
+            row.find('.status > .status-icon').removeClass('text-success');
+            row.find('.status > .status-icon').addClass('fa-pause-circle');
+            row.find('.status > .status-icon').addClass('text-warning');
+            row.find('.status > .status-name').html('Paused');
+            return;
+          }
+
+          row.find('.status > .status-icon').removeClass('fa-pause-circle');
+          row.find('.status > .status-icon').removeClass('text-warning');
+          row.find('.status > .status-icon').addClass('fa-check-circle');
+          row.find('.status > .status-icon').addClass('text-success');
+          row.find('.status > .status-name').html('Running');
+        });
+      });
+
+    }).fail((err) => {
+      console.log(err);
+    });
+  }
+
+  let { pathname } = window.location;
   pathname = pathname.split('/')[1];
   $(`.sidebar-item-${pathname}`).addClass('active');
-  
+
   hljs.initHighlightingOnLoad();
 </script>

@@ -59,6 +59,22 @@
       }
     });
 
+    const refresh = getUrlParam('refresh');
+
+    if (refresh) {
+      let timer = refresh / 1000;
+      
+      setInterval(function () {
+        $('.timer').html(`Refreshing in ${timer}...`);
+        timer -= 1;
+      }, 1000);
+
+      setInterval(function () {
+        timer = refresh / 1000;
+        refreshQueues();
+      }, refresh);
+    }
+
   });
 </script>
 {{/contentFor}}
@@ -71,14 +87,29 @@
   </div>
 
   <div class="d-flex align-items-center">
+    <span class="timer mr-3"></span>
+
     <div class="d-flex align-items-center mr-3">
       <input type="checkbox" id="selectAllQueues" role="button" class="mr-1">
       <span>Select all</span>
     </div>
 
+    <div class="dropdown mr-2">
+      <button class="btn btn-sm btn-info dropdown-toggle shadow" data-toggle="dropdown">
+        Refresh
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="/groups/{{ groupName }}">No refresh</a>
+        <a class="dropdown-item" href="/groups/{{ groupName }}?refresh=5000">5 sec</a>
+        <a class="dropdown-item" href="/groups/{{ groupName }}?refresh=10000">10 sec</a>
+        <a class="dropdown-item" href="/groups/{{ groupName }}?refresh=30000">30 sec</a>
+        <a class="dropdown-item" href="/groups/{{ groupName }}?refresh=60000">60 sec</a>
+      </div>
+    </div>
+
     {{#if loggedUser.permissions.pauseQueue}}
     <div class="dropdown mr-2">
-      <button class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+      <button class="btn btn-sm btn-primary dropdown-toggle shadow" data-toggle="dropdown">
         Actions
       </button>
       <div class="dropdown-menu">

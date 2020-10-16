@@ -8,7 +8,7 @@ const Ulid = require('ulid');
 class Queues {
   /**
    * Class constructor.
-   * @param {Object} config 
+   * @param {Object} config
    */
   constructor(config) {
     this.setConfig(config);
@@ -16,7 +16,7 @@ class Queues {
 
   /**
    * Get queue by its name and host.
-   * 
+   *
    * @param {String} name
    * @param {String} hostId
    * @return {Bull.Queue}
@@ -38,18 +38,19 @@ class Queues {
         port,
       },
     });
+    const paused = await queue.client.get(`${hostId}:${name}:meta-paused`);
 
     queue.hostId = hostId;
     queue.group = group;
     queue.jobCounts = await queue.getJobCounts();
-    queue.isPaused = (await queue.client.get(`${hostId}:${name}:meta-paused`)) == '1';
+    queue.isPaused = paused == '1';
 
     return queue;
   }
 
   /**
    * Check whether a queue is paused or not.
-   * 
+   *
    * @param {Bull.Queue} queue
    * @param {String} name
    * @param {String} hostId
@@ -57,7 +58,7 @@ class Queues {
    */
   async isPaused(queue, name, hostId) {
     const metaPausedValue = await queue.client.get(
-      `${hostId}:${name}:meta-paused`
+        `${hostId}:${name}:meta-paused`,
     );
 
     return metaPausedValue == '1';
@@ -65,7 +66,7 @@ class Queues {
 
   /**
    * List all queues.
-   * 
+   *
    * @return {Object}
    */
   list() {
@@ -74,22 +75,26 @@ class Queues {
 
   /**
    * List sorted queues.
-   * 
+   *
    * @return {Array}
    */
   async listSorted() {
     const queues = [];
 
-    for (const { name, hostId } of this.config.queues) {
+    for (const {name, hostId} of this.config.queues) {
       queues.push(await this.get(name, hostId));
     }
 
-    return _.orderBy(queues, ['jobCounts.failed', 'jobCounts.waiting'], ['desc', 'desc']);
+    return _.orderBy(
+        queues,
+        ['jobCounts.failed', 'jobCounts.waiting'],
+        ['desc', 'desc'],
+    );
   }
 
   /**
    * Filter queues by predicate.
-   * 
+   *
    * @param {Array} queuesList
    * @param {Object} predicate
    * @return {Array}
@@ -100,7 +105,7 @@ class Queues {
 
   /**
    * Filter grouped queues.
-   * 
+   *
    * @param {Array} queues
    * @param {Array} groups
    * @return {Array}
@@ -111,7 +116,7 @@ class Queues {
 
   /**
    * Get groups.
-   * 
+   *
    * @return {Array}
    */
   getGroups() {
@@ -120,7 +125,7 @@ class Queues {
 
   /**
    * Group queues.
-   * 
+   *
    * @param {Array} queuesList
    * @return {Object}
    */
@@ -134,13 +139,13 @@ class Queues {
         queues: _.filter(queuesList, {group}),
       });
     }
-    
+
     return groupedQueues;
   }
 
   /**
    * Create and add job to queue.
-   * 
+   *
    * @param {Bull.Queue} queue
    * @param {Object} data
    * @return {any}
@@ -156,12 +161,12 @@ class Queues {
       },
     ];
 
-    return queue.add.apply(queue, params);
+    return queue.add(...params);
   }
 
   /**
    * Set queue config.
-   * 
+   *
    * @param {Object} config
    */
   setConfig(config) {

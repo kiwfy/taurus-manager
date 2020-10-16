@@ -27,8 +27,14 @@ router.use(authMiddleware);
 router.get('/queues', queuesList);
 router.get('/queues/:groupName/:queueHostId/:queueName', queuesDetails);
 router.get('/queues/:groupName/:queueHostId/:queueName/:queueStatus', jobsList);
-router.get('/queues/:groupName/:queueHostId/:queueName/:queueStatus/export', jobsExport);
-router.get('/queues/:groupName/:queueHostId/:queueName/:queueStatus/:jobId', jobDetails);
+router.get(
+    '/queues/:groupName/:queueHostId/:queueName/:queueStatus/export',
+    jobsExport,
+);
+router.get(
+    '/queues/:groupName/:queueHostId/:queueName/:queueStatus/:jobId',
+    jobDetails,
+);
 
 router.get('/groups', groupsList);
 router.get('/groups/:groupName', groupDetails);

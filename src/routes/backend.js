@@ -10,6 +10,8 @@ const createJobController =
   require('../controllers/backend/queues/createJobController');
 const listJobsController =
   require('../controllers/backend/queues/listJobsController');
+const listQueuesController =
+  require('../controllers/backend/queues/listQueuesController');
 const pauseQueuesController =
   require('../controllers/backend/queues/pauseQueuesController');
 const resumeQueuesController =
@@ -37,9 +39,10 @@ router.post('/sessions', createSessionController);
 
 router.use(authMiddleware);
 
+router.get('/queues', listQueuesController);
 router.get(
-  '/queues/:queueHostId/:queueName/:queueStatus/jobs',
-  listJobsController
+    '/queues/:queueHostId/:queueName/:queueStatus/jobs',
+    listJobsController,
 );
 router.post('/queues/resume', resumeQueuesController);
 router.post('/queues/pause', pauseQueuesController);
