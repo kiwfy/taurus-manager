@@ -20,9 +20,13 @@
         data: JSON.stringify(payload),
         contentType: 'application/json',
       }).done(() => {
-        window.location = document.referrer;
-      }).fail((err) => {
-        console.log(err.responseText);
+        window.location.href = '/users';
+      }).fail((jqXHR) => {
+        const { responseJSON } = jqXHR;
+        const { error } = responseJSON;
+        const toast = $('#requestErrorToast');
+        toast.find('.toast-body').html(error);
+        toast.toast('show');
       });
     }
 
@@ -40,7 +44,7 @@
         data: JSON.stringify(payload),
         contentType: 'application/json',
       }).done(() => {
-        window.location = document.referrer;
+        window.location.href = '/users';
       }).fail((err) => {
         console.log(err.responseText);
       });
@@ -106,7 +110,7 @@
     });
 
     $('#cancelButton').click(function () {
-      window.location = document.referrer;
+      window.location.href = '/users';
     });
 
     loadUser();
@@ -188,4 +192,10 @@
   alertId='fillAllFieldsToast'
   alertColor='danger'
   alertText='Please, fill all fields.'
+}}
+
+{{> alert
+  alertId='requestErrorToast'
+  alertColor='danger'
+  alertText=''
 }}

@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const store = require('../../../utils/store');
 const permissions = require('../../../constants/permissions');
 
@@ -11,7 +10,7 @@ const handler = async (req, res) => {
   for (const key of keys) {
     const user = data[key];
     
-    if (user.username == username && bcrypt.compareSync(password, user.password)) {
+    if (user.username == username && user.password == password) {
       req.session.logged = true;
       user.id = key;
       user.permissions = permissions[user.role];

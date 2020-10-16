@@ -3,6 +3,7 @@
   $(document).ready(function () {
 
     function dispatchAction(action) {
+      const groupName = '{{groupName}}';
       const queueHostId = '{{queueHostId}}';
       const queueName = '{{queueName}}';
       const queueStatus = '{{queueStatus}}';
@@ -20,7 +21,7 @@
         data: JSON.stringify(payload),
         contentType: 'application/json',
       }).done(() => {
-        window.location = document.referrer;
+        window.location.href = `/queues/${groupName}/${queueHostId}/${queueName}/${queueStatus}`;
       }).fail((err) => {
         console.log(err.responseText);
       });

@@ -28,9 +28,8 @@
         window.location.href = `/${data.data}`;
       })
       .fail((err) => {
-        const { responseJSON } = err;
         const requestErrorToast = $('#requestErrorToast');
-        requestErrorToast.find('.toast-body').html(responseJSON.error);
+        requestErrorToast.find('.toast-body').html('An error has occurred!');
         requestErrorToast.toast('show');
       });
     });

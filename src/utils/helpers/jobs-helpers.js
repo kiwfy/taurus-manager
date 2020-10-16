@@ -8,10 +8,12 @@ const { getProtectedFields } = require('../../config/jobs');
  * @return {Bull.Job} 
  */
 const formatDates = (job) => {
-  job.timestamp = format(
-    job.timestamp,
-    'yyyy-MM-dd HH:mm:ss',
-  );
+  if (job.timestamp) {
+    job.timestamp = format(
+      job.timestamp,
+      'yyyy-MM-dd HH:mm:ss',
+    );
+  }
 
   return job;
 };
