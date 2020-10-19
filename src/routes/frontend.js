@@ -3,6 +3,7 @@ const express = require('express');
 const router = new express.Router();
 
 const authMiddleware = require('../middlewares/frontend/auth');
+const manageUsersMiddleware = require('../middlewares/frontend/manageUsers');
 
 const authLogin = require('../controllers/frontend/auth/login');
 const authLogout = require('../controllers/frontend/auth/logout');
@@ -42,8 +43,8 @@ router.get('/groups/:groupName', groupDetails);
 router.get('/errors', errorsList);
 router.get('/errors/:id', errorsJobs);
 
-router.get('/users', usersList);
-router.get('/users/new', usersNew);
-router.get('/users/:id', usersEdit);
+router.get('/users', manageUsersMiddleware, usersList);
+router.get('/users/new', manageUsersMiddleware, usersNew);
+router.get('/users/:id', manageUsersMiddleware, usersEdit);
 
 module.exports = router;

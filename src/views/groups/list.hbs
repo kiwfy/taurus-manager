@@ -8,7 +8,7 @@
   
   {{#each groupedQueues}}
   <div class="col-sm-3 mb-3 d-flex align-items-stretch">
-    <div class="card shadow w-100">
+    <div class="card shadow w-100 text-gray-800">
       <div class="card-body">
         <a href="/groups/{{ this.group }}">
           <h4>{{ this.group }}</h4>
@@ -18,7 +18,7 @@
         <div>
           {{#each this.queues}}
           <div class="d-flex justify-content-between mb-1">
-            <a href="/queues/{{this.group}}/{{this.hostId}}/{{this.name}}" class="text-gray-600">{{ this.name }}</a>
+            <a href="/queues/{{this.group}}/{{this.hostId}}/{{this.name}}" class="text-gray-800">{{ this.name }}</a>
             {{#if this.isPaused}}
             <i class="fas fa-pause-circle text-warning"></i>
             {{else}}

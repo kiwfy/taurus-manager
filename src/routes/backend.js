@@ -2,8 +2,13 @@ const express = require('express');
 
 const router = new express.Router();
 
-const authMiddleware =
-  require('../middlewares/backend/auth');
+const authMiddleware = require('../middlewares/backend/auth');
+const pauseQueueMiddleware = require('../middlewares/backend/pauseQueue');
+const addJobsMiddleware = require('../middlewares/backend/addJobs');
+const retryJobsMiddleware = require('../middlewares/backend/retryJobs');
+const removeJobsMiddleware = require('../middlewares/backend/removeJobs');
+const manageUsersMiddleware = require('../middlewares/backend/manageUsers');
+
 const createSessionController =
   require('../controllers/backend/sessions/createSessionController');
 const createJobController =
@@ -44,17 +49,17 @@ router.get(
     '/queues/:queueHostId/:queueName/:queueStatus/jobs',
     listJobsController,
 );
-router.post('/queues/resume', resumeQueuesController);
-router.post('/queues/pause', pauseQueuesController);
-router.post('/queues/jobs', createJobController);
-router.post('/queues/jobs/clone', cloneJobsController);
-router.post('/queues/jobs/remove', removeJobsController);
-router.post('/queues/jobs/retry', retryJobsController);
-router.post('/queues/jobs/retry-all', retryAllJobsController);
+router.post('/queues/resume', pauseQueueMiddleware, resumeQueuesController);
+router.post('/queues/pause', pauseQueueMiddleware, pauseQueuesController);
+router.post('/queues/jobs', addJobsMiddleware, createJobController);
+router.post('/queues/jobs/clone', retryJobsMiddleware, cloneJobsController);
+router.post('/queues/jobs/retry', retryJobsMiddleware, retryJobsController);
+router.post('/queues/jobs/retry-all', retryJobsMiddleware, retryAllJobsController);
+router.post('/queues/jobs/remove', removeJobsMiddleware, removeJobsController);
 
-router.post('/users', createUserController);
-router.put('/users/:id', updateUserController);
-router.delete('/users/:id', removeUserController);
+router.post('/users', manageUsersMiddleware, createUserController);
+router.put('/users/:id', manageUsersMiddleware, updateUserController);
+router.delete('/users/:id', manageUsersMiddleware, removeUserController);
 
 router.get('/errors', listErrorsController);
 router.get('/errors/:id/jobs', listErrorsJobsController);
