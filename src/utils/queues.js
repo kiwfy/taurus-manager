@@ -74,22 +74,18 @@ class Queues {
   }
 
   /**
-   * List sorted queues.
+   * List detailed queues.
    *
    * @return {Array}
    */
-  async listSorted() {
+  async listDetailed() {
     const queues = [];
 
     for (const {name, hostId} of this.config.queues) {
       queues.push(await this.get(name, hostId));
     }
 
-    return _.orderBy(
-        queues,
-        ['jobCounts.failed', 'jobCounts.waiting'],
-        ['desc', 'desc'],
-    );
+    return queues;
   }
 
   /**
