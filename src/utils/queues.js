@@ -38,7 +38,7 @@ class Queues {
         port,
       },
     });
-    const paused = await queue.client.get(`${hostId}:${name}:meta-paused`);
+    const paused = await queue.client.get(`bull:${name}:meta-paused`);
 
     queue.hostId = hostId;
     queue.group = group;
