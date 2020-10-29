@@ -5,3 +5,7 @@
 tr.vertical-center td {
   vertical-align: middle;
 }
+
+a:hover {
+  text-decoration: none;
+}
