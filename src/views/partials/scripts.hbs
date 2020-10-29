@@ -5,6 +5,12 @@
 <script src="/vendor/select2/js/select2.min.js"></script>
 <script src="/js/sb-admin-2.min.js"></script>
 <script>
+  if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
+    $("body").addClass("sidebar-toggled");
+    $(".sidebar").addClass("toggled");
+    $('.sidebar .collapse').collapse('hide');
+  };
+
   function getUrlParam(param) {
     const url = window.location.search.substring(1);
     const urlParams = url.split('&');
