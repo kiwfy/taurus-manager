@@ -33,7 +33,7 @@
       <tr class="queue-{{ ../group }}-{{ this.hostId }}-{{ this.name }}">
         <td><input role="button" class="select-queue" type="checkbox" data-name="{{ this.name }}"
             data-hostid="{{ this.hostId }}"=></td>
-        <td class="text-nowrap" style="width: 300px;">
+        <td class="text-nowrap font-weight-bold" style="width: 300px;">
           <a href="/queues/{{../group}}/{{this.hostId}}/{{this.name}}">{{ this.hostId }}/{{ this.name }}</a>
         </td>
         <td class="status text-nowrap">
@@ -45,11 +45,11 @@
           <span class="status-name">Running</span>
           {{/if}}
         </td>
-        <td class="paused-count">{{ this.jobCounts.paused }}</td>
-        <td class="waiting-count">{{ this.jobCounts.waiting }}</td>
-        <td class="active-count">{{ this.jobCounts.active }}</td>
-        <td class="delayed-count">{{ this.jobCounts.delayed }}</td>
-        <td class="failed-count">{{ this.jobCounts.failed }}</td>
+        <td class="paused-count font-weight-bold">{{ this.jobCounts.paused }}</td>
+        <td class="waiting-count font-weight-bold">{{ this.jobCounts.waiting }}</td>
+        <td class="active-count font-weight-bold">{{ this.jobCounts.active }}</td>
+        <td class="delayed-count font-weight-bold">{{ this.jobCounts.delayed }}</td>
+        <td class="failed-count font-weight-bold">{{ this.jobCounts.failed }}</td>
       </tr>
       {{/each}}
     </tbody>

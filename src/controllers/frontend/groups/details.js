@@ -1,13 +1,13 @@
 const handler = async (req, res) => {
   const { groupName } = req.params;
   const { queues } = req.app.locals;
-  const sortedQueues = await queues.listSorted();
-  const queuesList = queues.filter(sortedQueues, { group: groupName });
+  const queuesList = await queues.listDetailed();
+  const filteredQueues = queues.filter(queuesList, { group: groupName });
 
   return res.render('groups/table', {
     loggedUser: req.session.user,
     groupName,
-    queues: queuesList,
+    queues: filteredQueues,
   });
 };
 

@@ -1,9 +1,9 @@
 const handler = async (req, res) => {
   const { queues } = req.app.locals;
   const loggedUser = req.session.user;
-  const sortedQueues = await queues.listSorted();
+  const queuesList = await queues.listDetailed();
   const groupedQueues = queues.filterGroupedQueues(
-    queues.groupQueues(sortedQueues),
+    queues.groupQueues(queuesList),
     loggedUser.groups
   );
   const queuesData = groupedQueues.map((item) => {
