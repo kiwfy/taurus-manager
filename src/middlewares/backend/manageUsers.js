@@ -1,6 +1,10 @@
 module.exports = (req, res, next) => {
   const { user } = req.session;
 
+  if (user.id === req.params.id) {
+    return next();
+  }
+
   if (user.permissions.manageUsers) {
     return next();
   }

@@ -17,6 +17,7 @@ const groupDetails = require('../controllers/frontend/groups/details');
 const usersList = require('../controllers/frontend/users/list');
 const errorsList = require('../controllers/frontend/errors/list');
 const errorsJobs = require('../controllers/frontend/errors/jobs');
+const userProfile = require('../controllers/frontend/users/profile');
 const usersNew = require('../controllers/frontend/users/new');
 const usersEdit = require('../controllers/frontend/users/edit');
 
@@ -43,6 +44,7 @@ router.get('/groups/:groupName', groupDetails);
 router.get('/errors', errorsList);
 router.get('/errors/:id', errorsJobs);
 
+router.get('/users/me', userProfile);
 router.get('/users', manageUsersMiddleware, usersList);
 router.get('/users/new', manageUsersMiddleware, usersNew);
 router.get('/users/:id', manageUsersMiddleware, usersEdit);
