@@ -21,8 +21,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "./node_modules/.bin/eslint *.js ./src/**/*.js",
-    "check": "npm run lint"
+    "lint": "./node_modules/.bin/eslint *.js ./src/**/*.js ./src/*.js",
+    "check": "npm run lint && npm audit"
   },
   "dependencies": {
     "@popperjs/core": "^2.4.4",

@@ -54,7 +54,11 @@ router.post('/queues/pause', pauseQueueMiddleware, pauseQueuesController);
 router.post('/queues/jobs', addJobsMiddleware, createJobController);
 router.post('/queues/jobs/clone', retryJobsMiddleware, cloneJobsController);
 router.post('/queues/jobs/retry', retryJobsMiddleware, retryJobsController);
-router.post('/queues/jobs/retry-all', retryJobsMiddleware, retryAllJobsController);
+router.post(
+    '/queues/jobs/retry-all',
+    retryJobsMiddleware,
+    retryAllJobsController,
+);
 router.post('/queues/jobs/remove', removeJobsMiddleware, removeJobsController);
 
 router.post('/users', manageUsersMiddleware, createUserController);
