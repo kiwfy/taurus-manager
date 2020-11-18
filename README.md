@@ -1,7 +1,7 @@
 # Taurus Manager
 
-[![Latest Version](https://img.shields.io/github/v/release/kiwfy/simple-express-handlebars-admin.svg?style=flat-square)](https://github.com/kiwfy/simple-express-handlebars-admin/releases)
-[![Build Status](https://img.shields.io/github/workflow/status/kiwfy/simple-express-handlebars-admin/CI?label=ci%20build&style=flat-square)](https://github.com/kiwfy/simple-express-handlebars-admin/actions?query=workflow%3ACI)
+[![Latest Version](https://img.shields.io/github/v/release/kiwfy/taurus-manager.svg?style=flat-square)](https://github.com/kiwfy/taurus-manager/releases)
+[![Build Status](https://img.shields.io/github/workflow/status/kiwfy/taurus-manager/CI?label=ci%20build&style=flat-square)](https://github.com/kiwfy/taurus-manager/actions?query=workflow%3ACI)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 The perfect platform to organize and manage your Taurus queues. This is a dashboard to control the status and performance of queues and jobs with resources for debugging and failure management. Everything with an authentication layer and permissions by user.
